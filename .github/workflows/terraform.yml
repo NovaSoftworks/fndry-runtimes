@@ -1,0 +1,52 @@
+name: 'Terraform'
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+  
+    env:
+      TF_VAR_billing_account: ${{ vars.TF_VAR_BILLING_ACCOUNT }}
+      TF_VAR_organization: ${{ vars.TF_VAR_ORGANIZATION }}
+      TF_VAR_foundation_state_bucket: ${{ vars.TF_BACKEND_BUCKET }}
+      TF_BACKEND_BUCKET: ${{ vars.TF_BACKEND_BUCKET }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Authenticate using Workload Identity Federation
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ vars.GOOGLE_PROVIDER }}
+        service_account: ${{ vars.GOOGLE_SERVICE_ACCOUNT }}
+        create_credentials_file: true
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+        
+    - name: Setup Terraform backend
+      run: ./backend-setup.sh
+        
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve tfplan
