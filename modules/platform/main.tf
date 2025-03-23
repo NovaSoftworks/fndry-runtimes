@@ -1,8 +1,8 @@
 locals {
-  region_parts           = split("-", var.region) # ["europe", "west4"]
+  region_parts           = split("-", var.region)
   region_parts_shortened = [for part in local.region_parts : substr(part, 0, 1)]
   region_number          = try(regex("([0-9]+)", var.region) != "", false) ? regex("([0-9]+)", var.region)[0] : ""
-  region_short           = "${join("", local.region_parts_shortened)}${local.region_number}" # "ew4"
+  region_short           = "${join("", local.region_parts_shortened)}${local.region_number}"
 }
 
 resource "random_id" "default" {
@@ -24,10 +24,11 @@ resource "time_sleep" "for_60s_after_project" {
 
 # Terraform backend for the platform's team
 module "platform_remote_backend" {
-  source = "github.com/NovaSoftworks/tfr-gc-remote-backend?ref=v1.0.1"
+  source = "github.com/NovaSoftworks/tfr-gc-remote-backend?ref=v1.0.2"
 
   location   = "EU"
   project_id = google_project.project.project_id
+  subdomain  = google_project.project.project_id
 }
 
 # Services
