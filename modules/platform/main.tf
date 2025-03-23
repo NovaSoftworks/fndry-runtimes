@@ -1,4 +1,6 @@
 locals {
+  platform_name = "novacp-${var.environment}-${var.purpose}"
+
   region_parts           = split("-", var.region)
   region_parts_shortened = [for part in local.region_parts : substr(part, 0, 1)]
   region_number          = try(regex("([0-9]+)", var.region) != "", false) ? regex("([0-9]+)", var.region)[0] : ""
@@ -11,8 +13,8 @@ resource "random_id" "default" {
 
 resource "google_project" "project" {
   folder_id       = var.parent_folder_id
-  name            = "novacp-${var.environment}-${var.purpose}"
-  project_id      = "novacp-${var.environment}-${var.purpose}-${random_id.default.hex}"
+  name            = local.platform_name
+  project_id      = "${local.platform_name}-${random_id.default.hex}"
   billing_account = var.billing_account_id
   deletion_policy = "DELETE" # TODO: remove after POC
 }
@@ -47,10 +49,15 @@ resource "google_compute_shared_vpc_service_project" "vpc_service" {
   service_project = google_project.project.project_id
 }
 
+data "google_compute_network" "vpc" {
+  name    = var.shared_vpc_id
+  project = var.shared_vpc_host_project_id
+}
+
 resource "google_compute_subnetwork" "subnet" {
   project       = var.shared_vpc_host_project_id
-  name          = "novacp-${var.environment}-${var.purpose}-${local.region_short}-subnet"
-  network       = var.shared_vpc_id
+  name          = "${local.platform_name}-${local.region_short}-subnet"
+  network       = data.google_compute_network.vpc.self_link
   region        = var.region
   ip_cidr_range = var.cidr
 }
