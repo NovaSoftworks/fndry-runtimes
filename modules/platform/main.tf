@@ -22,6 +22,14 @@ resource "time_sleep" "for_60s_after_project" {
   create_duration = "60s"
 }
 
+# Terraform backend for the platform's team
+module "platform_remote_backend" {
+  source = "github.com/NovaSoftworks/tfr-gc-remote-backend?ref=v1.0.1"
+
+  location   = "EU"
+  project_id = google_project.project.project_id
+}
+
 # Services
 resource "google_project_service" "project_compute_service" {
   depends_on = [time_sleep.for_60s_after_project]
