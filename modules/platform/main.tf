@@ -1,11 +1,18 @@
+locals {
+  region_parts           = split("-", var.region) # ["europe", "west4"]
+  region_parts_shortened = [for part in local.region_parts : substr(part, 0, 1)]
+  region_number          = try(regex("([0-9]+)", var.region) != "", false) ? regex("([0-9]+)", var.region)[0] : ""
+  region_short           = "${join("", local.region_parts_shortened)}${local.region_number}" # "ew4"
+}
+
 resource "random_id" "default" {
   byte_length = 4
 }
 
 resource "google_project" "project" {
   folder_id       = var.parent_folder_id
-  name            = "novacp-${var.environment_short_name}-${var.purpose}"
-  project_id      = "novacp-${var.environment_short_name}-${var.purpose}-${random_id.default.hex}"
+  name            = "novacp-${var.environment}-${var.purpose}"
+  project_id      = "novacp-${var.environment}-${var.purpose}-${random_id.default.hex}"
   billing_account = var.billing_account_id
   deletion_policy = "DELETE" # TODO: remove after POC
 }
@@ -22,4 +29,19 @@ resource "google_project_service" "project_compute_service" {
   service    = "compute.googleapis.com"
 
   disable_on_destroy = true
+}
+
+# Network
+resource "google_compute_shared_vpc_service_project" "vpc_service" {
+  depends_on      = [google_project_service.project_compute_service]
+  host_project    = var.shared_vpc_host_project_id
+  service_project = google_project.project.project_id
+}
+
+resource "google_compute_subnetwork" "subnet" {
+  project       = var.shared_vpc_host_project_id
+  name          = "novacp-${var.environment}-${var.purpose}-${local.region_short}-subnet"
+  network       = var.shared_vpc_id
+  region        = var.region
+  ip_cidr_range = var.cidr
 }

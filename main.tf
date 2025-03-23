@@ -12,16 +12,22 @@ data "google_billing_account" "acct" {
 }
 
 locals {
-  billing_account_id  = data.google_billing_account.acct.id
-  platforms_folder_id = data.terraform_remote_state.foundation.outputs.prd_platforms_folder_id
+  billing_account_id = data.google_billing_account.acct.id
 }
 
 
-module "poc_prd" {
+module "prd_platforms" {
+  for_each = {
+    for p in var.platforms.prd : "prd-${p.purpose}" => p
+  }
   source = "./modules/platform"
 
-  parent_folder_id       = local.platforms_folder_id
-  billing_account_id     = local.billing_account_id
-  environment_short_name = "prd"
-  purpose                = "poc"
+  billing_account_id         = local.billing_account_id
+  parent_folder_id           = data.terraform_remote_state.foundation.outputs.prd.platforms_folder_id
+  environment                = "prd"
+  shared_vpc_host_project_id = data.terraform_remote_state.foundation.outputs.prd.shared_vpc_host_project_id
+  shared_vpc_id              = data.terraform_remote_state.foundation.outputs.prd.shared_vpc_id
+  purpose                    = each.value.purpose
+  region                     = each.value.region
+  cidr                       = each.value.cidr
 }

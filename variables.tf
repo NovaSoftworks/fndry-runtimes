@@ -7,3 +7,11 @@ variable "billing_account" {
   type        = string
   description = "The name of the billing account in Google Cloud to use for the platforms."
 }
+
+variable "platforms" {
+  type = map(list(object({
+    region  = string
+    purpose = string
+    cidr    = string
+  })))
+}
