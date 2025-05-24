@@ -16,7 +16,7 @@ locals {
 }
 
 
-module "prd_platforms" {
+/*module "prd_platforms" {
   for_each = {
     for p in var.platforms.prd : "prd-${p.purpose}" => p
   }
@@ -31,3 +31,4 @@ module "prd_platforms" {
   region                     = each.value.region
   cidr                       = each.value.cidr
 }
+*/

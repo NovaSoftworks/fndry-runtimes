@@ -2,6 +2,7 @@ output "foundation_outputs" {
   value = data.terraform_remote_state.foundation.outputs
 }
 
+/*
 output "prd_platforms" {
   //value = module.prd_platforms.subnet
   value = [
@@ -13,3 +14,4 @@ output "prd_platforms" {
     }
   ]
 }
+*/
