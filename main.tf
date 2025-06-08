@@ -16,10 +16,7 @@ locals {
 }
 
 
-/*module "prd_platforms" {
-  for_each = {
-    for p in var.platforms.prd : "prd-${p.purpose}" => p
-  }
+module "novacp_prd_default" {
   source = "./modules/platform"
 
   billing_account_id         = local.billing_account_id
@@ -27,8 +24,7 @@ locals {
   environment                = "prd"
   shared_vpc_host_project_id = data.terraform_remote_state.foundation.outputs.prd.shared_vpc_host_project_id
   shared_vpc_id              = data.terraform_remote_state.foundation.outputs.prd.shared_vpc_id
-  purpose                    = each.value.purpose
-  region                     = each.value.region
-  cidr                       = each.value.cidr
+  purpose                    = "default"
+  region                     = "europe-west4"
+  cidr                       = "10.0.1.0/24"
 }
-*/
