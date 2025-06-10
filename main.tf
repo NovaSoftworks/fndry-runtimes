@@ -25,6 +25,9 @@ module "novacp_prd_default" {
   shared_vpc_host_project_id = data.terraform_remote_state.foundation.outputs.prd.shared_vpc_host_project_id
   shared_vpc_id              = data.terraform_remote_state.foundation.outputs.prd.shared_vpc_id
   purpose                    = "default"
-  region                     = "europe-west4"
-  cidr                       = "10.0.1.0/24"
+  region                     = "europe-west1"
+  zone                       = "b"
+  base_cidr                  = "10.0.0.0/21"
+  node_type                  = "e2-standard-4"
+  node_count                 = 1
 }

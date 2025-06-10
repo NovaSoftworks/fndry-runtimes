@@ -30,7 +30,7 @@ variable "parent_folder_id" {
 
 variable "purpose" {
   type        = string
-  description = "The purpose of this landing zone (e.g. myapp)."
+  description = "The purpose of this platform (e.g. myapp)."
 }
 
 variable "region" {
@@ -38,6 +38,21 @@ variable "region" {
   description = "The unabbreviated region where the platform will be created (e.g. europe-west4)."
 }
 
-variable "cidr" {
+variable "zone" {
+  type        = string
+  description = "The zone within the region (e.g. a)."
+}
+
+variable "base_cidr" {
   type = string
+}
+
+variable "node_type" {
+  description = "The machine type for the node pool."
+  type        = string
+}
+
+variable "node_count" {
+  description = "The number of nodes in the node pool."
+  type        = number
 }

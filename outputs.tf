@@ -2,16 +2,11 @@ output "foundation_outputs" {
   value = data.terraform_remote_state.foundation.outputs
 }
 
-/*
-output "prd_platforms" {
-  //value = module.prd_platforms.subnet
-  value = [
-    for platform in module.prd_platforms : {
-      name                = platform.project_name
-      id                  = platform.project_id
-      backend_bucket_name = platform.backend_bucket_name
-      subnet              = platform.subnet
-    }
-  ]
+output "novacp_prd_default" { 
+  value = {
+    project_id                  = module.novacp_prd_default.project_id
+    subnet_id                   = module.novacp_prd_default.subnet_id
+    kubernetes_cluster_name     = module.novacp_prd_default.kubernetes_cluster_name
+    kubernetes_cluster_endpoint = module.novacp_prd_default.kubernetes_cluster_endpoint
+  }
 }
-*/

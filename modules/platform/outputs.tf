@@ -6,14 +6,19 @@ output "project_id" {
   value = google_project.project.project_id
 }
 
-output "backend_bucket_name" {
-  value = module.platform_remote_backend.bucket_name
+output "subnet_id" {
+  value = google_compute_subnetwork.subnet.id
 }
 
-output "subnet" {
-  value = {
-    name   = google_compute_subnetwork.subnet.name
-    region = google_compute_subnetwork.subnet.region
-    cidr   = google_compute_subnetwork.subnet.ip_cidr_range
-  }
+output "kubernetes_cluster_name" {
+  value = module.kubernetes_cluster.cluster_name
+}
+
+output "kubernetes_cluster_endpoint" {
+  value = module.kubernetes_cluster.cluster_endpoint
+}
+
+output "kubernetes_cluster_ca_certificate" {
+  value     = module.kubernetes_cluster.cluster_ca_certificate
+  sensitive = true
 }
