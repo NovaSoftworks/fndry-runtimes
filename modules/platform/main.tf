@@ -110,7 +110,7 @@ module "kubernetes_cluster" {
   cluster_name = "${local.platform_name}-${local.region_short}-k8s"
   node_count = var.node_count
   node_type = var.node_type
-  node_disks_size_gb = 10
+  node_disks_size_gb = 50
   node_tags = [ var.environment, "allow-iap-ssh-ingress" ]
   network_id = data.google_compute_network.vpc.self_link
   subnet_id  = google_compute_subnetwork.subnet.id
