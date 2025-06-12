@@ -1,7 +1,7 @@
 
 variable "billing_account_id" {
   type        = string
-  description = "The alphanumerical ID of the billing account in Google Cloud to use for the platform."
+  description = "The alphanumerical ID of the billing account in Google Cloud to use for the runtime."
 }
 
 variable "environment" {
@@ -25,17 +25,17 @@ variable "shared_vpc_id" {
 
 variable "parent_folder_id" {
   type        = string
-  description = "The ID of the parent folder where the platform will project be created 9 (e.g. folder/123456789)."
+  description = "The ID of the parent folder where the runtime will project be created 9 (e.g. folder/123456789)."
 }
 
 variable "purpose" {
   type        = string
-  description = "The purpose of this platform (e.g. myapp)."
+  description = "The purpose of this runtime (e.g. myapp)."
 }
 
 variable "region" {
   type        = string
-  description = "The unabbreviated region where the platform will be created (e.g. europe-west4)."
+  description = "The unabbreviated region where the runtime will be created (e.g. europe-west4)."
 }
 
 variable "zone" {

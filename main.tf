@@ -17,10 +17,10 @@ locals {
 
 
 module "novacp_prd_default" {
-  source = "./modules/platform"
+  source = "./modules/runtime"
 
   billing_account_id         = local.billing_account_id
-  parent_folder_id           = data.terraform_remote_state.foundation.outputs.prd.platforms_folder_id
+  parent_folder_id           = data.terraform_remote_state.foundation.outputs.prd.runtimes_folder_id
   environment                = "prd"
   shared_vpc_host_project_id = data.terraform_remote_state.foundation.outputs.prd.shared_vpc_host_project_id
   shared_vpc_id              = data.terraform_remote_state.foundation.outputs.prd.shared_vpc_id

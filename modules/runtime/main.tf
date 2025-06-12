@@ -1,5 +1,5 @@
 locals {
-  platform_name = "novacp-${var.environment}-${var.purpose}"
+  runtime_name = "novacp-${var.environment}-${var.purpose}"
 
   region_parts           = split("-", var.region)
   region_parts_shortened = [for part in local.region_parts : substr(part, 0, 1)]
@@ -13,8 +13,8 @@ resource "random_id" "default" {
 
 resource "google_project" "project" {
   folder_id       = var.parent_folder_id
-  name            = local.platform_name
-  project_id      = "${local.platform_name}-${random_id.default.hex}"
+  name            = local.runtime_name
+  project_id      = "${local.runtime_name}-${random_id.default.hex}"
   billing_account = var.billing_account_id
   deletion_policy = "DELETE" # TODO: remove after POC
 }
@@ -84,7 +84,7 @@ data "google_compute_network" "vpc" {
 
 resource "google_compute_subnetwork" "subnet" {
   project       = var.shared_vpc_host_project_id
-  name          = "${local.platform_name}-${local.region_short}-subnet"
+  name          = "${local.runtime_name}-${local.region_short}-subnet"
   network       = data.google_compute_network.vpc.self_link
   region        = var.region
   ip_cidr_range = cidrsubnet(var.base_cidr, 2, 0)
@@ -107,7 +107,7 @@ module "kubernetes_cluster" {
 
   project_id = google_project.project.project_id
   location     = "${var.region}-${var.zone}"
-  cluster_name = "${local.platform_name}-${local.region_short}-k8s"
+  cluster_name = "${local.runtime_name}-${local.region_short}-k8s"
   node_count = var.node_count
   node_type = var.node_type
   node_disks_size_gb = 50
