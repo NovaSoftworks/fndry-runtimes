@@ -70,6 +70,11 @@ resource "google_project_iam_member" "gke_sa_host_host_service_agent_user" {
   member     = "serviceAccount:${local.gke_sa_email}"
 }
 
+resource "time_sleep" "after_roles_created" {
+  depends_on      = [ google_project_iam_member.google_apis_sa_host_network_user, google_project_iam_member.gke_sa_host_network_user, google_project_iam_member.gke_sa_host_host_service_agent_user ]
+  create_duration = "5s"
+}
+
 # Network
 resource "google_compute_shared_vpc_service_project" "vpc_service" {
   depends_on      = [ google_project_service.project_compute_service ]
@@ -83,6 +88,7 @@ data "google_compute_network" "vpc" {
 }
 
 resource "google_compute_subnetwork" "subnet" {
+  depends_on = [ time_sleep.after_roles_created ]
   project       = var.shared_vpc_host_project_id
   name          = "${local.runtime_name}-${local.region_short}-subnet"
   network       = data.google_compute_network.vpc.self_link
