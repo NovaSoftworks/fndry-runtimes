@@ -24,57 +24,6 @@ resource "time_sleep" "for_60s_after_project" {
   create_duration = "60s"
 }
 
-locals {
-  project_number = google_project.project.number
-  google_apis_sa_email = "${local.project_number}@cloudservices.gserviceaccount.com"
-  gke_sa_email = "service-${local.project_number}@container-engine-robot.iam.gserviceaccount.com"
-}
-
-# Services
-resource "google_project_service" "project_compute_service" {
-  depends_on = [time_sleep.for_60s_after_project]
-  project    = google_project.project.project_id
-  service    = "compute.googleapis.com"
-
-  disable_on_destroy = true
-}
-
-resource "google_project_service" "project_container_service" {
-  depends_on = [ time_sleep.for_60s_after_project ]
-  project    = google_project.project.project_id
-  service    = "container.googleapis.com"
-
-  disable_on_destroy = true
-}
-
-# Roles
-
-resource "google_project_iam_member" "google_apis_sa_host_network_user" {
-  depends_on =  [ google_project_service.project_compute_service ]
-  project    = var.shared_vpc_host_project_id
-  role       = "roles/compute.networkUser"
-  member     = "serviceAccount:${local.google_apis_sa_email}"
-}
-
-resource "google_project_iam_member" "gke_sa_host_network_user" {
-  depends_on = [ google_project_service.project_compute_service, google_project_service.project_container_service ]
-  project    = var.shared_vpc_host_project_id
-  role       = "roles/compute.networkUser"
-  member     = "serviceAccount:${local.gke_sa_email}"
-}
-
-resource "google_project_iam_member" "gke_sa_host_host_service_agent_user" {
-  depends_on = [ google_project_service.project_compute_service, google_project_service.project_container_service ]
-  project    = var.shared_vpc_host_project_id
-  role       = "roles/container.hostServiceAgentUser"
-  member     = "serviceAccount:${local.gke_sa_email}"
-}
-
-resource "time_sleep" "after_roles_created" {
-  depends_on      = [ google_project_iam_member.google_apis_sa_host_network_user, google_project_iam_member.gke_sa_host_network_user, google_project_iam_member.gke_sa_host_host_service_agent_user ]
-  create_duration = "5s"
-}
-
 # Network
 resource "google_compute_shared_vpc_service_project" "vpc_service" {
   depends_on      = [ google_project_service.project_compute_service ]
@@ -88,7 +37,7 @@ data "google_compute_network" "vpc" {
 }
 
 resource "google_compute_subnetwork" "subnet" {
-  depends_on = [ time_sleep.after_roles_created ]
+  depends_on = [ google_project_iam_member.google_apis_sa_host_network_user ]
   project       = var.shared_vpc_host_project_id
   name          = "${local.runtime_name}-${local.region_short}-subnet"
   network       = data.google_compute_network.vpc.self_link
