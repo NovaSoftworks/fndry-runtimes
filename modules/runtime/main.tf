@@ -58,11 +58,15 @@ resource "google_compute_subnetwork" "subnet" {
 # Kubernetes Cluster
 module "kubernetes_cluster" {
   depends_on = [ google_project_service.project_container_service ]
-  source = "github.com/NovaSoftworks/tfr-gc-kubernetes?ref=v1.0.2"
+  source = "github.com/NovaSoftworks/tfr-gc-kubernetes?ref=v1.1.1"
 
   project_id = google_project.project.project_id
   location     = "${var.region}-${var.zone}"
   cluster_name = "${local.runtime_name}-${local.region_short}-k8s"
+  cluster_tools_node_count = var.cluster_tools_node_count
+  cluster_tools_node_type = var.cluster_tools_node_type
+  cluster_tools_node_disks_size_gb = 10
+  cluster_tools_node_tags = [ var.environment, "allow-iap-ssh-ingress" ]
   node_count = var.node_count
   node_type = var.node_type
   node_disks_size_gb = 50

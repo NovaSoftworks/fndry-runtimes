@@ -28,6 +28,8 @@ module "novacp_prd_default" {
   region                     = "europe-west1"
   zone                       = "b"
   base_cidr                  = "10.0.0.0/21"
-  node_type                  = "e2-standard-4"
+  cluster_tools_node_type    = "e2-small"
+  cluster_tools_node_count   = 1
+  node_type                  = "e2-medium"
   node_count                 = 1
 }

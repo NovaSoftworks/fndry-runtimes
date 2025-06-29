@@ -47,6 +47,16 @@ variable "base_cidr" {
   type = string
 }
 
+variable "cluster_tools_node_type" {
+  description = "The machine type for the node pool dedicated to cluster tools."
+  type        = string
+}
+
+variable "cluster_tools_node_count" {
+  description = "The number of nodes in the node pool dedicated to cluster tools."
+  type        = number
+}
+
 variable "node_type" {
   description = "The machine type for the node pool."
   type        = string
